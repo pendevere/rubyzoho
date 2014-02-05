@@ -55,6 +55,10 @@ module CrudMethods
     RubyZoho.configuration.api.attach_file(self.class.module_name, self.send(primary_key), file_path, file_name)
   end
 
+  def add_note(note_title, note_content)
+    RubyZoho.configuration.api.add_note(self.send(primary_key), note_title, note_content)
+  end
+
   def create(object_attribute_hash)
     initialize(object_attribute_hash)
     save

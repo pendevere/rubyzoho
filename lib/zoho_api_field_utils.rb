@@ -13,7 +13,7 @@ module ZohoApiFieldUtils
   end
 
   def adjust_tag_case(tag)
-    return tag if tag == 'id'
+    return tag if ['id', 'entityId'].include?(tag)
     return tag.upcase if tag.downcase.rindex('id')
     u_tags = %w[SEMODULE]
     return tag.upcase if u_tags.index(tag.upcase)

@@ -62,6 +62,33 @@ module ZohoApi
       res.code
     end
 
+    # Insert notes and relate to the primary module
+    # see https://www.zoho.com/crm/help/api/insertrecords.html#Insert_notes_and_relate_to_the_primary_module
+    def add_note(record_id, note_title, note_content)
+      puts "adding note to record #{record_id}"
+      x = REXML::Document.new 
+      element = x.add_element 'Notes'
+      row = element.add_element 'row', { 'no' => '1' }
+
+      {
+        'entityId' => record_id,
+        'Note Title' => note_title, 
+        'Note Content' => note_content
+      }.each_pair { |k, v| add_field(row, k, v) }
+
+      url = create_url('Notes', 'insertRecords')
+      puts "url is #{url}"
+      puts "posted data is #{x.to_s}"
+
+      r = self.class.post(url,
+                          :query => { :newFormat => 1, :authtoken => @auth_token,
+                                      :scope => 'crmapi', :xmlData => x, :wfTrigger => 'true' },
+                          :headers => { 'Content-length' => '0' })
+      check_for_errors(r)
+      x_r = REXML::Document.new(r.body).elements.to_a('//recorddetail')
+      to_hash(x_r, 'Notes')[0]
+    end
+
     def check_for_errors(response)
       raise(RuntimeError, "Web service call failed with #{response.code}") unless response.code == 200
       x = REXML::Document.new(response.body)
