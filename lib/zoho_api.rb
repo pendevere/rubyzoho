@@ -65,7 +65,6 @@ module ZohoApi
     # Insert notes and relate to the primary module
     # see https://www.zoho.com/crm/help/api/insertrecords.html#Insert_notes_and_relate_to_the_primary_module
     def add_note(record_id, note_title, note_content)
-      puts "adding note to record #{record_id}"
       x = REXML::Document.new 
       element = x.add_element 'Notes'
       row = element.add_element 'row', { 'no' => '1' }
@@ -77,9 +76,6 @@ module ZohoApi
       }.each_pair { |k, v| add_field(row, k, v) }
 
       url = create_url('Notes', 'insertRecords')
-      puts "url is #{url}"
-      puts "posted data is #{x.to_s}"
-
       r = self.class.post(url,
                           :query => { :newFormat => 1, :authtoken => @auth_token,
                                       :scope => 'crmapi', :xmlData => x, :wfTrigger => 'true' },
